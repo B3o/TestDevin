@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from .routes import upload
 from fastapi_pagination import Page, add_pagination, paginate
 from sqlalchemy.orm import Session
 from typing import List
@@ -202,6 +204,12 @@ async def rss_feed(db: Session = Depends(get_db)):
             fe.updated(post.updated_at)
     
     return Response(content=fg.rss_str(pretty=True), media_type="application/rss+xml", headers={"Content-Type": "application/rss+xml; charset=utf-8"})
+
+# Mount static files directory
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Include routers
+app.include_router(upload.router, prefix="/api")
 
 # Add pagination support
 add_pagination(app)
