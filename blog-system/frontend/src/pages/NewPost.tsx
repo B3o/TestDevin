@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Button } from '../components/ui/button';
@@ -15,7 +15,7 @@ export function NewPost() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleImageUpload = async (file: File) => {
+  const handleImageUpload = useCallback(async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -41,10 +41,10 @@ export function NewPost() {
     } catch (error) {
       console.error('Failed to upload image:', error);
     }
-  };
+  }, []);
 
   // Handle paste events
-  const handlePaste = (e: ClipboardEvent): void => {
+  const handlePaste = useCallback((e: ClipboardEvent): void => {
     const items = e.clipboardData?.items;
     if (!items) return;
 
@@ -55,10 +55,10 @@ export function NewPost() {
         if (file) handleImageUpload(file);
       }
     }
-  };
+  }, [handleImageUpload]);
 
   // Handle drag and drop
-  const handleDrop = (e: DragEvent): void => {
+  const handleDrop = useCallback((e: DragEvent): void => {
     e.preventDefault();
     const files = e.dataTransfer?.files;
     if (!files) return;
@@ -68,7 +68,7 @@ export function NewPost() {
         handleImageUpload(files[i]);
       }
     }
-  };
+  }, [handleImageUpload]);
 
   const handleDragOver = (e: DragEvent): void => {
     e.preventDefault();
@@ -90,7 +90,7 @@ export function NewPost() {
         editor.removeEventListener('dragover', handleDragOver as EventListener);
       }
     };
-  }, []);
+  }, [handleDrop, handlePaste]);
 
   const handleCreate = async () => {
     try {
