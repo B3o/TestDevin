@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { fetchPost, type BlogPost } from "@/lib/api";
 import { format } from "date-fns";
 import { Helmet } from "react-helmet";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Calendar } from "lucide-react";
 
 export function PostPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -47,14 +49,26 @@ export function PostPage() {
         )}
       </Helmet>
 
-      <article className="max-w-3xl mx-auto prose prose-slate">
-        <h1>{post.title}</h1>
-        <div className="text-muted-foreground">
-          {format(new Date(post.created_at), 'PPP')}
-          {post.updated_at && ` (Updated: ${format(new Date(post.updated_at), 'PPP')})`}
-        </div>
-        <div className="mt-8" dangerouslySetInnerHTML={{ __html: post.content }} />
-      </article>
+      <div className="max-w-3xl mx-auto">
+        <Button variant="ghost" asChild className="mb-8">
+          <Link to="/" className="flex items-center space-x-2">
+            <ArrowLeft className="h-4 w-4" />
+            <span>返回文章列表</span>
+          </Link>
+        </Button>
+
+        <article className="prose prose-slate max-w-none">
+          <h1 className="mb-4">{post.title}</h1>
+          <div className="flex items-center space-x-2 text-muted-foreground mb-8">
+            <Calendar className="h-4 w-4" />
+            <span>
+              {format(new Date(post.created_at), 'PPP')}
+              {post.updated_at && ` (更新于: ${format(new Date(post.updated_at), 'PPP')})`}
+            </span>
+          </div>
+          <div className="mt-8" dangerouslySetInnerHTML={{ __html: post.content }} />
+        </article>
+      </div>
     </>
   );
 }

@@ -14,6 +14,97 @@ from .database import engine, get_db
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
 
+# Add sample blog posts
+def create_sample_posts():
+    db = next(get_db())
+    sample_posts = [
+        {
+            "title": "Getting Started with FastAPI",
+            "content": """# Getting Started with FastAPI
+
+FastAPI is a modern, fast (high-performance) web framework for building APIs with Python 3.6+ based on standard Python type hints.
+
+## Key Features
+- Fast: Very high performance, on par with NodeJS and Go
+- Fast to code: Increase the speed to develop features by about 200% to 300%
+- Fewer bugs: Reduce about 40% of human (developer) induced errors
+- Intuitive: Great editor support. Completion everywhere. Less time debugging
+- Easy: Designed to be easy to use and learn. Less time reading docs
+- Short: Minimize code duplication. Multiple features from each parameter declaration
+
+## Why FastAPI?
+FastAPI stands on the shoulders of giants:
+- Starlette for the web parts
+- Pydantic for the data parts
+""",
+            "meta_description": "Learn about FastAPI, a modern Python web framework for building high-performance APIs with type hints and automatic documentation generation.",
+            "keywords": "FastAPI, Python, API, web framework, performance, type hints",
+            "slug": "getting-started-with-fastapi"
+        },
+        {
+            "title": "Understanding SEO Best Practices",
+            "content": """# SEO Best Practices for Modern Websites
+
+Search Engine Optimization (SEO) is crucial for improving your website's visibility in search results.
+
+## Key SEO Elements
+1. Quality Content
+2. Meta Tags
+3. Site Structure
+4. Mobile Optimization
+5. Page Speed
+
+## Implementation Tips
+- Use descriptive URLs
+- Optimize images
+- Create quality backlinks
+- Implement proper header structure
+- Regular content updates
+""",
+            "meta_description": "Discover essential SEO best practices for modern websites, including meta tags, content optimization, and technical considerations.",
+            "keywords": "SEO, meta tags, content optimization, website optimization, search engine",
+            "slug": "understanding-seo-best-practices"
+        },
+        {
+            "title": "Building Modern Web Applications",
+            "content": """# Modern Web Application Architecture
+
+Learn about the best practices for building scalable web applications.
+
+## Key Components
+1. Frontend Framework (React/Vue/Angular)
+2. Backend API
+3. Database
+4. Caching Layer
+5. Authentication
+
+## Best Practices
+- Use TypeScript for type safety
+- Implement proper error handling
+- Follow REST/GraphQL principles
+- Optimize for performance
+- Regular security audits
+""",
+            "meta_description": "Explore modern web application architecture and best practices for building scalable, maintainable applications.",
+            "keywords": "web development, architecture, scalability, best practices, modern web",
+            "slug": "building-modern-web-applications"
+        }
+    ]
+    
+    for post_data in sample_posts:
+        post = models.BlogPost(
+            title=post_data["title"],
+            content=post_data["content"],
+            meta_description=post_data["meta_description"],
+            keywords=post_data["keywords"],
+            slug=post_data["slug"]
+        )
+        db.add(post)
+    
+    db.commit()
+
+create_sample_posts()
+
 app = FastAPI(
     title="Blog System API",
     description="A blog system with SEO optimization",
