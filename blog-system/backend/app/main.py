@@ -88,6 +88,97 @@ Learn about the best practices for building scalable web applications.
             "meta_description": "Explore modern web application architecture and best practices for building scalable, maintainable applications.",
             "keywords": "web development, architecture, scalability, best practices, modern web",
             "slug": "building-modern-web-applications"
+        },
+        {
+            "title": "Three.js和WebGL：创建像素风格的3D世界",
+            "content": """# Three.js和WebGL：创建像素风格的3D世界
+
+在现代Web开发中，Three.js已经成为创建3D图形的首选工具。本文将探讨如何使用Three.js创建独特的像素风格3D场景。
+
+## 核心概念
+1. WebGL基础
+2. Three.js场景设置
+3. 像素着色器
+4. 性能优化
+
+## 实现技巧
+- 使用低分辨率渲染
+- 自定义像素化着色器
+- 优化移动端性能
+- 创建复古视觉效果
+
+## 示例代码
+```javascript
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+
+// 设置像素化效果
+renderer.setPixelRatio(window.devicePixelRatio * 0.5);
+```
+""",
+            "meta_description": "深入探讨使用Three.js和WebGL创建像素风格3D世界的技术细节，包括场景设置、着色器编写和性能优化等关键主题。",
+            "keywords": "Three.js, WebGL, 3D graphics, pixel art, shaders, performance optimization",
+            "slug": "threejs-webgl-pixel-style-3d-world"
+        },
+        {
+            "title": "像素艺术在现代Web设计中的应用",
+            "content": """# 像素艺术在现代Web设计中的应用
+
+像素艺术不仅仅是一种复古风格，更是现代Web设计中的一种强大表现形式。
+
+## 设计原则
+1. 限制调色板
+2. 网格对齐
+3. 像素完美
+4. 动画考虑
+
+## 实现方法
+- CSS像素化技术
+- Canvas绘制
+- SVG优化
+- 响应式设计
+
+## 最佳实践
+- 保持清晰的边缘
+- 使用合适的缩放
+- 考虑可访问性
+- 优化加载性能
+""",
+            "meta_description": "探索像素艺术在现代Web设计中的应用，包括设计原则、实现技术和最佳实践。",
+            "keywords": "pixel art, web design, retro style, CSS, canvas, SVG",
+            "slug": "pixel-art-in-modern-web-design"
+        },
+        {
+            "title": "WebGL着色器：从入门到精通",
+            "content": """# WebGL着色器：从入门到精通
+
+着色器是现代图形编程的核心，掌握着色器编程可以创造令人惊叹的视觉效果。
+
+## 基础知识
+1. GLSL语言
+2. 顶点着色器
+3. 片段着色器
+4. 数学基础
+
+## 高级技巧
+- 自定义效果
+- 性能优化
+- 后期处理
+- 粒子系统
+
+## 实战示例
+```glsl
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = fragCoord/iResolution.xy;
+    vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
+    fragColor = vec4(col,1.0);
+}
+```
+""",
+            "meta_description": "深入学习WebGL着色器编程，从基础概念到高级应用，包括GLSL语言、性能优化和实战示例。",
+            "keywords": "WebGL, GLSL, shaders, graphics programming, visual effects",
+            "slug": "webgl-shaders-from-beginner-to-master"
         }
     ]
     
