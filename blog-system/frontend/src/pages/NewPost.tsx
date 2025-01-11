@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Button } from '../components/ui/button';
@@ -14,6 +14,83 @@ export function NewPost() {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleImageUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload-image`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Upload failed');
+
+      const data = await response.json();
+      const quill = document.querySelector('.ql-editor');
+      if (quill) {
+        const range = window.getSelection()?.getRangeAt(0);
+        if (range) {
+          const img = document.createElement('img');
+          img.src = `${import.meta.env.VITE_API_URL}${data.url}`;
+          img.alt = file.name;
+          range.insertNode(img);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+    }
+  };
+
+  // Handle paste events
+  const handlePaste = (e: ClipboardEvent): void => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        e.preventDefault();
+        const file = items[i].getAsFile();
+        if (file) handleImageUpload(file);
+      }
+    }
+  };
+
+  // Handle drag and drop
+  const handleDrop = (e: DragEvent): void => {
+    e.preventDefault();
+    const files = e.dataTransfer?.files;
+    if (!files) return;
+
+    for (let i = 0; i < files.length; i++) {
+      if (files[i].type.indexOf('image') !== -1) {
+        handleImageUpload(files[i]);
+      }
+    }
+  };
+
+  const handleDragOver = (e: DragEvent): void => {
+    e.preventDefault();
+  };
+
+  // Add event listeners when component mounts
+  useEffect(() => {
+    const editor = document.querySelector('.ql-editor') as HTMLElement;
+    if (editor) {
+      editor.addEventListener('paste', handlePaste as EventListener);
+      editor.addEventListener('drop', handleDrop as EventListener);
+      editor.addEventListener('dragover', handleDragOver as EventListener);
+    }
+
+    return () => {
+      if (editor) {
+        editor.removeEventListener('paste', handlePaste as EventListener);
+        editor.removeEventListener('drop', handleDrop as EventListener);
+        editor.removeEventListener('dragover', handleDragOver as EventListener);
+      }
+    };
+  }, []);
 
   const handleCreate = async () => {
     try {
@@ -63,13 +140,29 @@ export function NewPost() {
               theme="snow"
               placeholder="开始写作..."
               modules={{
-                toolbar: [
-                  [{ header: [1, 2, 3, false] }],
-                  ['bold', 'italic', 'underline', 'strike'],
-                  [{ list: 'ordered' }, { list: 'bullet' }],
-                  ['link', 'image'],
-                  ['clean'],
-                ],
+                toolbar: {
+                  container: [
+                    [{ header: [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    ['link', 'image'],
+                    ['clean'],
+                  ],
+                  handlers: {
+                    image: () => {
+                      const input = document.createElement('input');
+                      input.setAttribute('type', 'file');
+                      input.setAttribute('accept', 'image/*');
+                      input.click();
+
+                      input.onchange = async () => {
+                        const file = input.files?.[0];
+                        if (!file) return;
+                        handleImageUpload(file);
+                      };
+                    }
+                  }
+                }
               }}
             />
           </div>
