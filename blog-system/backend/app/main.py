@@ -29,6 +29,10 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+@app.get("/")
+async def read_root():
+    return {"message": "Welcome to the Blog System API"}
+
 @app.get("/healthz")
 async def healthz():
     return {"status": "ok"}
@@ -44,7 +48,7 @@ async def create_post(post: schemas.BlogPostCreate, db: Session = Depends(get_db
     db.refresh(db_post)
     return db_post
 
-@app.get("/posts/", response_model=Page[schemas.BlogPost])
+@app.get("/posts", response_model=Page[schemas.BlogPost])
 async def list_posts(db: Session = Depends(get_db)):
     posts = db.query(models.BlogPost).filter(models.BlogPost.is_published == True).order_by(models.BlogPost.created_at.desc()).all()
     return paginate(posts)
