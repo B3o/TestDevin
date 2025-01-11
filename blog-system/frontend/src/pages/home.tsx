@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import { Newspaper } from "lucide-react";
+import { PixelWorld } from "@/components/PixelWorld";
 
 export function HomePage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -26,7 +27,8 @@ export function HomePage() {
       </Helmet>
       
       <div className="space-y-8">
-        <div className="flex items-center space-x-4">
+        <PixelWorld />
+        <div className="flex items-center space-x-4 mt-8">
           <Newspaper className="h-8 w-8" />
           <h1 className="text-4xl font-bold">最新文章</h1>
         </div>
