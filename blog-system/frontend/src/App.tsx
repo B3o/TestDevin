@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/layout";
 import { HomePage } from "./pages/home";
 import { PostPage } from "./pages/post";
+import { NewPost } from "./pages/NewPost";
 import { Toaster } from "./components/ui/toaster";
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
+          <Route path="posts/new" element={<NewPost />} />
           <Route path="posts/:slug" element={<PostPage />} />
         </Route>
       </Routes>

@@ -22,3 +22,20 @@ export async function fetchPost(slug: string): Promise<BlogPost> {
   if (!response.ok) throw new Error('Failed to fetch post');
   return response.json();
 }
+
+export async function createPost(data: { 
+  title: string;
+  content: string;
+  meta_description?: string;
+  keywords?: string;
+}): Promise<BlogPost> {
+  const response = await fetch(`${API_URL}/posts`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error('Failed to create post');
+  return response.json();
+}
