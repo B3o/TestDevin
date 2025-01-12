@@ -59,9 +59,49 @@ export function PixelWorld() {
     // Add performance optimization hints
     scene.matrixAutoUpdate = false; // Manual matrix updates for static objects
 
-    // Create cyberpunk buildings
-    const cityGeometry = new THREE.BoxGeometry(1, 1, 1);
+    // Create detailed cyberpunk buildings with neon edges
+    const buildingGeometries = [
+      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.CylinderGeometry(0.5, 0.5, 1, 8),
+      new THREE.BoxGeometry(0.8, 1, 0.8)
+    ];
+
+    // Create holographic billboard geometry
+    const billboardGeometry = new THREE.PlaneGeometry(2, 3);
+    
+    // Holographic shader material
+    const holoShader = {
+      uniforms: {
+        time: { value: 0 },
+        color: { value: new THREE.Color(0x00ffff) }
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float time;
+        uniform vec3 color;
+        varying vec2 vUv;
+        
+        void main() {
+          float scanline = sin(vUv.y * 50.0 + time * 2.0) * 0.15 + 0.85;
+          float flicker = sin(time * 8.0) * 0.03 + 0.97;
+          float noise = fract(sin(dot(vUv, vec2(12.9898,78.233))) * 43758.5453123);
+          
+          vec3 finalColor = color * scanline * flicker;
+          float alpha = (0.6 + noise * 0.2) * (1.0 - pow(abs(vUv.x - 0.5) * 2.0, 2.0));
+          
+          gl_FragColor = vec4(finalColor, alpha);
+        }
+      `
+    };
+
     const buildingMaterials = [
+      // Base building material
       new THREE.MeshPhongMaterial({
         color: 0x0a0a0a,
         emissive: 0x000000,
@@ -69,56 +109,229 @@ export function PixelWorld() {
         shininess: 30,
         flatShading: true,
       }),
+      // Neon edge material
       new THREE.MeshPhongMaterial({
         color: 0x0f0f0f,
         emissive: 0xff1493,
-        emissiveIntensity: 0.5,
+        emissiveIntensity: 2.0,
         specular: 0x111111,
         shininess: 30,
         flatShading: true,
       }),
+      // Alternative neon material
       new THREE.MeshPhongMaterial({
         color: 0x0a0a0a,
         emissive: 0x00ffff,
-        emissiveIntensity: 0.5,
+        emissiveIntensity: 2.0,
         specular: 0x111111,
         shininess: 30,
         flatShading: true,
       })
     ];
 
-    // Create cyberpunk buildings
+    // Create holographic billboard material
+    const holoMaterial = new THREE.ShaderMaterial({
+      uniforms: holoShader.uniforms,
+      vertexShader: holoShader.vertexShader,
+      fragmentShader: holoShader.fragmentShader,
+      transparent: true,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending
+    });
+
+    // Create cyberpunk buildings with billboards
     for (let i = 0; i < 100; i++) {
+      // Create main building
+      const geometryIndex = Math.floor(Math.random() * buildingGeometries.length);
       const building = new THREE.Mesh(
-        cityGeometry,
+        buildingGeometries[geometryIndex],
         buildingMaterials[Math.floor(Math.random() * buildingMaterials.length)]
       );
-      const height = Math.random() * 4 + 1; // Taller buildings
-      const width = Math.random() * 0.5 + 0.5;
-      const depth = Math.random() * 0.5 + 0.5;
+      
+      const height = Math.random() * 6 + 2; // Taller buildings
+      const width = Math.random() * 0.8 + 0.5;
+      const depth = Math.random() * 0.8 + 0.5;
       
       building.scale.set(width, height, depth);
       building.position.x = Math.random() * 20 - 10;
       building.position.z = Math.random() * 20 - 10;
       building.position.y = height / 2;
-      
-      // Add random rotation for more organic feel
       building.rotation.y = Math.random() * Math.PI * 2;
+      
+      // Add neon edges using line segments
+      const edges = new THREE.EdgesGeometry(building.geometry);
+      const edgeMaterial = new THREE.LineBasicMaterial({ 
+        color: Math.random() > 0.5 ? 0xff1493 : 0x00ffff,
+        linewidth: 2
+      });
+      const edgeLines = new THREE.LineSegments(edges, edgeMaterial);
+      building.add(edgeLines);
+      
+      // Add holographic billboard to some buildings
+      if (Math.random() > 0.7) {
+        const billboard = new THREE.Mesh(billboardGeometry, holoMaterial);
+        billboard.position.y = height / 2;
+        billboard.position.x = width / 2 + 0.1;
+        billboard.rotation.y = Math.PI / 2;
+        building.add(billboard);
+        
+        // Add another billboard on the opposite side
+        const billboard2 = billboard.clone();
+        billboard2.position.x = -width / 2 - 0.1;
+        billboard2.rotation.y = -Math.PI / 2;
+        building.add(billboard2);
+      }
       
       scene.add(building);
     }
     
-    // Add ground plane with reflection
-    const groundGeometry = new THREE.PlaneGeometry(100, 100);
-    const groundMaterial = new THREE.MeshPhongMaterial({
-      color: 0x0a0a0a,
-      specular: 0x111111,
-      shininess: 100,
+    // Add cyberpunk ground with glowing patterns
+    const groundGeometry = new THREE.PlaneGeometry(100, 100, 50, 50);
+    const groundShader = {
+      uniforms: {
+        time: { value: 0 },
+        color1: { value: new THREE.Color(0x000913) },
+        color2: { value: new THREE.Color(0x00ffff) }
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float time;
+        uniform vec3 color1;
+        uniform vec3 color2;
+        varying vec2 vUv;
+        
+        float grid(vec2 uv, float size) {
+          vec2 grid = fract(uv * size);
+          return step(0.95, max(grid.x, grid.y));
+        }
+        
+        void main() {
+          float gridPattern = grid(vUv, 50.0) * 0.5;
+          float pulsePattern = sin(vUv.x * 20.0 + time) * 0.5 + 0.5;
+          pulsePattern *= sin(vUv.y * 20.0 + time * 0.5) * 0.5 + 0.5;
+          
+          vec3 color = mix(color1, color2, gridPattern + pulsePattern * 0.3);
+          gl_FragColor = vec4(color, 1.0);
+        }
+      `
+    };
+    
+    const groundMaterial = new THREE.ShaderMaterial({
+      uniforms: groundShader.uniforms,
+      vertexShader: groundShader.vertexShader,
+      fragmentShader: groundShader.fragmentShader
     });
+    
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = 0;
     scene.add(ground);
+    
+    // Add neon pipes
+    const createNeonPipe = () => {
+      const curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(Math.random() * 20 - 10, Math.random() * 10 + 5, Math.random() * 20 - 10),
+        new THREE.Vector3(Math.random() * 20 - 10, Math.random() * 10 + 5, Math.random() * 20 - 10),
+        new THREE.Vector3(Math.random() * 20 - 10, Math.random() * 10 + 5, Math.random() * 20 - 10),
+        new THREE.Vector3(Math.random() * 20 - 10, Math.random() * 10 + 5, Math.random() * 20 - 10)
+      ]);
+      
+      const tubeGeometry = new THREE.TubeGeometry(curve, 100, 0.1, 8, false);
+      const tubeMaterial = new THREE.MeshPhongMaterial({
+        color: 0x000000,
+        emissive: Math.random() > 0.5 ? 0xff1493 : 0x00ffff,
+        emissiveIntensity: 2.0,
+        shininess: 100
+      });
+      
+      return new THREE.Mesh(tubeGeometry, tubeMaterial);
+    };
+    
+    // Add multiple neon pipes
+    for (let i = 0; i < 15; i++) {
+      scene.add(createNeonPipe());
+    }
+    
+    // Add maglev train track
+    const trackCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-15, 8, -15),
+      new THREE.Vector3(-15, 8, 15),
+      new THREE.Vector3(15, 8, 15),
+      new THREE.Vector3(15, 8, -15),
+      new THREE.Vector3(-15, 8, -15)
+    ]);
+    
+    const trackGeometry = new THREE.TubeGeometry(trackCurve, 200, 0.2, 8, true);
+    const trackMaterial = new THREE.MeshPhongMaterial({
+      color: 0x101010,
+      emissive: 0x39ff14,
+      emissiveIntensity: 1.0,
+      shininess: 100
+    });
+    
+    const track = new THREE.Mesh(trackGeometry, trackMaterial);
+    scene.add(track);
+    
+    // Add train
+    const trainGeometry = new THREE.CapsuleGeometry(0.3, 2, 4, 8);
+    const trainMaterial = new THREE.MeshPhongMaterial({
+      color: 0x202020,
+      emissive: 0x39ff14,
+      emissiveIntensity: 0.5,
+      shininess: 100
+    });
+    
+    const train = new THREE.Mesh(trainGeometry, trainMaterial);
+    scene.add(train);
+    
+    // Add drones
+    const createDrone = () => {
+      const droneGroup = new THREE.Group();
+      
+      // Drone body
+      const body = new THREE.Mesh(
+        new THREE.BoxGeometry(0.5, 0.2, 0.5),
+        new THREE.MeshPhongMaterial({
+          color: 0x202020,
+          emissive: 0xff1493,
+          emissiveIntensity: 0.5
+        })
+      );
+      droneGroup.add(body);
+      
+      // Drone light beam
+      const beamGeometry = new THREE.CylinderGeometry(0.1, 0.3, 2, 8);
+      const beamMaterial = new THREE.MeshPhongMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.2,
+        emissive: 0xffffff,
+        emissiveIntensity: 1.0
+      });
+      const beam = new THREE.Mesh(beamGeometry, beamMaterial);
+      beam.position.y = -1;
+      droneGroup.add(beam);
+      
+      return droneGroup;
+    };
+    
+    // Add multiple drones
+    const drones = Array(5).fill(null).map(() => {
+      const drone = createDrone();
+      drone.position.set(
+        Math.random() * 30 - 15,
+        Math.random() * 5 + 10,
+        Math.random() * 30 - 15
+      );
+      scene.add(drone);
+      return drone;
+    });
 
     // Add enhanced cyberpunk lighting with volumetric effects
     const ambientLight = new THREE.AmbientLight(0x101010, 0.5);
@@ -178,11 +391,43 @@ export function PixelWorld() {
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       if (camera) {
-        // Rotate camera around scene
         const time = Date.now() * 0.001;
+        
+        // Update shader uniforms
+        holoShader.uniforms.time.value = time;
+        groundShader.uniforms.time.value = time;
+        
+        // Rotate camera around scene
         camera.position.x = Math.cos(time * 0.5) * 8;
         camera.position.z = Math.sin(time * 0.5) * 8;
         camera.lookAt(scene.position);
+        
+        // Update holographic billboards
+        scene.traverse((object) => {
+          if (object instanceof THREE.Mesh && object.material === holoMaterial) {
+            object.material.uniforms.time.value = time;
+          }
+        });
+        
+        // Animate train along track
+        if (train) {
+          const trainProgress = (time * 0.2) % 1;
+          const trainPosition = trackCurve.getPointAt(trainProgress);
+          const trainTangent = trackCurve.getTangentAt(trainProgress);
+          
+          train.position.copy(trainPosition);
+          train.quaternion.setFromUnitVectors(
+            new THREE.Vector3(0, 0, 1),
+            trainTangent
+          );
+        }
+        
+        // Animate drones
+        drones.forEach((drone, i) => {
+          const offset = i * Math.PI * 0.4;
+          drone.position.y += Math.sin(time * 2 + offset) * 0.02;
+          drone.rotation.y = time + offset;
+        });
         
         composerRef.current?.render();
       }
