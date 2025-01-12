@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import { Newspaper } from "lucide-react";
+import { PixelWorld } from "@/components/PixelWorld";
 
 export function HomePage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -26,23 +27,26 @@ export function HomePage() {
       </Helmet>
       
       <div className="space-y-8">
+        <div className="w-full h-[600px] mb-8 bg-background border border-neon-cyan/20 rounded-lg overflow-hidden">
+          <PixelWorld />
+        </div>
         <div className="flex items-center space-x-4">
-          <Newspaper className="h-8 w-8" />
-          <h1 className="text-4xl font-bold">最新文章</h1>
+          <Newspaper className="h-8 w-8 text-neon-cyan" />
+          <h1 className="text-4xl font-bold neon-text">最新文章</h1>
         </div>
         
         {loading ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map(i => (
-              <Card key={i} className="h-64">
+              <Card key={i} className="h-64 bg-card border-neon-cyan/20">
                 <CardHeader>
-                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                  <div className="h-6 bg-muted rounded w-3/4"></div>
+                  <div className="h-4 bg-muted rounded w-1/4 mt-2"></div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded"></div>
-                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                    <div className="h-4 bg-muted rounded"></div>
+                    <div className="h-4 bg-muted rounded w-5/6"></div>
                   </div>
                 </CardContent>
               </Card>
@@ -52,10 +56,10 @@ export function HomePage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {posts.map(post => (
               <Link key={post.id} to={`/posts/${post.slug}`}>
-                <Card className="h-full hover:shadow-lg transition-shadow">
+                <Card className="h-full hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] transition-all duration-300 bg-card border-neon-cyan/20">
                   <CardHeader>
-                    <CardTitle className="line-clamp-2">{post.title}</CardTitle>
-                    <CardDescription>{format(new Date(post.created_at), 'PPP')}</CardDescription>
+                    <CardTitle className="line-clamp-2 text-neon-cyan hover-glow">{post.title}</CardTitle>
+                    <CardDescription className="text-neon-pink/70">{format(new Date(post.created_at), 'PPP')}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground line-clamp-3">

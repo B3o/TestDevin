@@ -57,16 +57,19 @@ export function PostPage() {
           </Link>
         </Button>
 
-        <article className="prose prose-slate max-w-none">
-          <h1 className="mb-4">{post.title}</h1>
-          <div className="flex items-center space-x-2 text-muted-foreground mb-8">
+        <article className="prose prose-invert prose-headings:text-neon-cyan prose-a:text-neon-pink hover:prose-a:text-neon-pink/80 max-w-none">
+          <h1 className="mb-4 hover-glow">{post.title}</h1>
+          <div className="flex items-center space-x-2 text-neon-green/70 mb-8">
             <Calendar className="h-4 w-4" />
             <span>
               {format(new Date(post.created_at), 'PPP')}
               {post.updated_at && ` (更新于: ${format(new Date(post.updated_at), 'PPP')})`}
             </span>
           </div>
-          <div className="mt-8" dangerouslySetInnerHTML={{ __html: post.content }} />
+          <div 
+            className="mt-8 prose-code:bg-card prose-code:text-neon-cyan prose-pre:bg-card prose-pre:border prose-pre:border-neon-cyan/20" 
+            dangerouslySetInnerHTML={{ __html: post.content }} 
+          />
         </article>
       </div>
     </>

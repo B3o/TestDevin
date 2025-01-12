@@ -3,25 +3,50 @@
 @tailwind utilities;
 @layer base {
   :root {
-    --radius: 0.5rem
-  ;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%}
-  .dark {
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%
+    --radius: 0.25rem;
+    
+    /* Cyberpunk theme colors */
+    --background: 234 29% 6%; /* #0F0F0F */
+    --foreground: 0 0% 98%;
+    
+    /* Neon accents */
+    --neon-cyan: 180 100% 50%; /* #00ffff */
+    --neon-pink: 320 100% 50%; /* #ff00ee */
+    --neon-green: 114 100% 54%; /* #39ff14 */
+    
+    /* UI Elements */
+    --card: 234 25% 8%;
+    --card-foreground: 0 0% 98%;
+    --border: 234 25% 15%;
+    --input: 234 25% 10%;
+    --ring: 180 100% 50%;
+    
+    /* Interactive elements */
+    --primary: 180 100% 50%;
+    --primary-foreground: 234 29% 6%;
+    --secondary: 320 100% 50%;
+    --secondary-foreground: 234 29% 6%;
+    --accent: 114 100% 54%;
+    --accent-foreground: 234 29% 6%;
+    --muted: 234 25% 12%;
+    --muted-foreground: 240 5% 64.9%;
+  }
+
+  /* Apply neon glow effects */
+  .neon-text {
+    text-shadow: 0 0 10px hsl(var(--neon-cyan) / 0.5),
+                 0 0 20px hsl(var(--neon-cyan) / 0.3);
+  }
+  
+  .neon-border {
+    box-shadow: 0 0 10px hsl(var(--neon-cyan) / 0.5),
+                inset 0 0 10px hsl(var(--neon-cyan) / 0.3);
+  }
+  
+  .hover-glow:hover {
+    text-shadow: 0 0 10px currentColor,
+                 0 0 20px currentColor;
+    transition: text-shadow 0.3s ease;
   }
 }
 
