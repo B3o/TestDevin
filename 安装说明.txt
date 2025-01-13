@@ -1,0 +1,38 @@
+Image2Video 插件安装说明
+
+1. 解压文件
+ image2video_plugin.zip 解压到一个临时目录。
+
+2. 复制插件
+#
+ chatgpt-on-wechat 项目的 plugins/image2video 目录下：
+mkdir -p /path/to/chatgpt-on-wechat/plugins/image2video
+cp -r * /path/to/chatgpt-on-wechat/plugins/image2video/
+
+3. 配置插件
+cd /
+cp config.json.example config.json
+ config.json 填入以下信息：
+- api_url: API服务器地址
+- imgbb_api_key: ImgBB图床API密钥s
+- ak: API访问密钥
+- sk: API密钥
+
+4. 安装依赖
+ chatgpt-on-wechat 目录下运行：
+pip install -r plugins/image2video/requirements.txt
+
+5. 启动测试
+ chatgpt-on-wechat 程序：
+python app.py
+
+6. 验证安装
+复制插件--------发送 "动起来" 测试插件是否正常工作。
+
+#cd /
+cd /
+1. 配置文件是否正确
+2. 依赖是否安装完整
+3. 查看日志文件排查错误
+
+cd /
